@@ -13,9 +13,7 @@ class basic(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if not message.author.id==709533146034602084:
-            return
-        #await message.channel.send("어쩔티비")
+        pass
 
 
 

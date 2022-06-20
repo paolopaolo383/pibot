@@ -58,13 +58,9 @@ async def on_message(message):
     global idlist
     global manager
     global files
-    if message.channel.id==988376807923396638:
-        if message.author.id == idlist[2] or message.author.id == idlist[5]:
-            #await message.delete()
-            return
     if message.author.bot:
         return
-    if not message.author.id in manager: #이예준 널
+    if not message.author.id in manager:
         return
     if message.content ==prefix +"reload all":
         for filename in files:
