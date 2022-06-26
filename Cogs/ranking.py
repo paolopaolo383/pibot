@@ -15,7 +15,5 @@ class ranking(commands.Cog, name="ranking"):
         self.client = client
 
 
-
-
 def setup(client):
     client.add_cog(ranking(client))

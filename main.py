@@ -2,12 +2,11 @@ import asyncio
 from warnings import catch_warnings
 import discord
 import os
-import token
+import token2
 from discord.ext import commands
 from discord.errors import HTTPException
 from discord.utils import get
 files = os.listdir("Cogs")
-
 client = commands.Bot(command_prefix=None, help_command=None)
 manager = [596708010768990209,587545300126924810,783579362062630933]
 idlist = [596708010768990209,587545300126924810,709533146034602084,783579362062630933,825639467494539279,829166944946094120]
@@ -29,7 +28,7 @@ async def on_ready():
     print("================")
 
 async def log(content):
-    await client.get_channel(987938555076689940).send(content)
+    await client.get_channel(990247385345196032).send(content+"<:__:927935688509390858>")
 
 async def sendembed(message):
     global files
@@ -46,12 +45,12 @@ async def sendembed(message):
     for file in l:
         if file.endswith(".py"):
             if not file in files:
-                embed.add_field(name="❌", value=f"{file[:-3]}", inline=True)
+                embed.add_field(name=f"{file[:-3]}", value="❌", inline=True)
 
     for f in files:
-        embed.add_field(name="✅", value=f"{f[:-3]}", inline=True)
-    if len(files) ==0:
-        embed.add_field(name="❌",value="플러그인이 없습니다")
+        embed.add_field(name=f"{f[:-3]}", value="✅", inline=True)
+    #if len(files) ==0:
+    #    embed.add_field(name="❌",value="플러그인이 없습니다")
     await message.channel.send(embed=embed)
 @client.event
 async def on_message(message):
@@ -118,6 +117,6 @@ async def on_message(message):
 
 
 
-client.run(token.gettoken())
+client.run(token2.gettoken())
 
 

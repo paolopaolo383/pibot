@@ -4,16 +4,19 @@ from discord.ext import commands
 import json
 
 class basic(commands.Cog):
-    """
-    가장 기본적인 명령어들이 모여있는 카테고리 입니다.
-    """
 
     def __init__(self, client):
         self.client = client
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        pass
+        if message.content == "help":
+            embed = discord.Embed(
+                title="PI BOT",
+                description="3.141592653589793238462643383279502884197169399375105820974944...",
+                color=0xffffff)
+            embed.add_field(name="PI초대 링크",value="[봇 초대](https://discord.com/api/oauth2/authorize?client_id=881498177700773889&permissions=8&scope=bot)",inline=True)
+            await message.channel.send(embed=embed)
 
 
 
