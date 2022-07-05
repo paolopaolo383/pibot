@@ -52,6 +52,7 @@ async def sendembed(message):
     #if len(files) ==0:
     #    embed.add_field(name="❌",value="플러그인이 없습니다")
     await message.channel.send(embed=embed)
+
 @client.event
 async def on_message(message):
     global idlist
