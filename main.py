@@ -118,6 +118,6 @@ async def on_message(message):
 
 
 
-client.run(token2.gettoken())
+client.run(os.environ['token'])
 
 
