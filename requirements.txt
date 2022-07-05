@@ -1,5 +1,4 @@
 discord.py
 asyncio
 numpy
-random
 commands

@@ -1,5 +1,6 @@
 import asyncio
-import random
+from random import random
+
 import async_timeout
 from unicodedata import name
 import discord
