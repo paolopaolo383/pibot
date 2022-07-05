@@ -2,7 +2,6 @@ import asyncio
 from warnings import catch_warnings
 import discord
 import os
-import token2
 from discord.ext import commands
 from discord.errors import HTTPException
 from discord.utils import get
