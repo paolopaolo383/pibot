@@ -4,6 +4,7 @@ import asyncio
 import discord
 import random
 import json
+import token
 import numpy
 from discord.ext import commands
 
@@ -124,4 +125,4 @@ async def on_message(message):
         await sendembed(message)
 
 
-client.run("ODgxNDk4MTc3NzAwNzczODg5.GHP9cH.wGPxO1CDTo8z8NWRFsHm4WyfYDTmNOuXTyLeYI")
+client.run(token.gettoken())
