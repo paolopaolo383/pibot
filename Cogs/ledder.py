@@ -1,12 +1,8 @@
 import asyncio
-from random import random
+import random
 
-import async_timeout
-from unicodedata import name
-import discord
-from discord.ext import commands
-import json
 import numpy
+from discord.ext import commands
 
 le = 6
 eleme = 5

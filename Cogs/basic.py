@@ -10,7 +10,7 @@ class basic(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if message.content == "help":
+        if message.content == "help" or message.content == "invite":
             embed = discord.Embed(
                 title="PI BOT",
                 description="3.141592653589793238462643383279502884197169399375105820974944...",

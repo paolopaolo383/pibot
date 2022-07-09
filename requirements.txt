@@ -1,3 +1,4 @@
 discord.py
+numpy~=1.19.2
+discord~=1.0.1
 asyncio
-numpy
