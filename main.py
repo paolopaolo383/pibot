@@ -5,6 +5,7 @@ import discord
 import random
 import json
 import numpy
+import token2
 from discord.ext import commands
 
 files = os.listdir("Cogs")
@@ -124,4 +125,4 @@ async def on_message(message):
         await sendembed(message)
 
 
-client.run(os.environ['token'])
+client.run(token2.gettoken())

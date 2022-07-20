@@ -5,7 +5,7 @@ import numpy
 from discord.ext import commands
 
 le = 6
-eleme = 5
+eleme = 4
 # maximum option
 # len 5 ele 5
 # len 6 ele 4
@@ -95,7 +95,7 @@ class ledder(commands.Cog, name="ledder"):
         ledderarray = numpy.array([line] * le)
         for i in range(1, le - 1):
             for hj in range(0, count - 1):
-                ran = random.randrange(1, 3)  # 1,4
+                ran = random.randrange(1, 3)  # 1,2
                 if ran == 1:  # 4분의 1
                     ledderarray[i, hj * 3 + 2] = 1
                     ledderarray[i, hj * 3 + 3] = 1
