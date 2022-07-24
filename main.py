@@ -2,8 +2,6 @@ import os
 import async_timeout
 import asyncio
 
-import discord_components
-from discord.ui import Button,View
 import discord
 import random
 import json
@@ -15,8 +13,7 @@ files = os.listdir("Cogs")
 
 client = commands.Bot(command_prefix=None, help_command=None)
 manager = [596708010768990209, 587545300126924810, 783579362062630933]
-idlist = [596708010768990209, 587545300126924810, 709533146034602084, 783579362062630933, 825639467494539279,
-          829166944946094120]
+idlist = [596708010768990209, 587545300126924810, 709533146034602084, 783579362062630933, 825639467494539279,829166944946094120]
 #               예준                 널                  러마               란토                 덴                 pb봇
 prefix = ""
 
@@ -45,9 +42,9 @@ async def log(content):
 
 
 async def sendembed(message):
-    loadbtn = Button(label= "Load",style=discord_components.ButtonStyle.red)
-    unloadbtn = Button(label="Unload", style=discord_components.ButtonStyle.green)
-    view = View()
+    #loadbtn = Button(label= "Load",style=discord_components.ButtonStyle.red)
+    #unloadbtn = Button(label="Unload", style=discord_components.ButtonStyle.green)
+    #view = View()
     global files
 
     l = []
@@ -62,14 +59,14 @@ async def sendembed(message):
         if file.endswith(".py"):
             if not file in files:
                 embed.add_field(name=f"{file[:-3]}", value="❌", inline=True)
-                view.add_item(loadbtn)
+                #view.add_item(loadbtn)
 
     for f in files:
         embed.add_field(name=f"{f[:-3]}", value="✅", inline=True)
-        view.add_item(unloadbtn)
+        #view.add_item(unloadbtn)
     # if len(files) ==0:
     #    embed.add_field(name="❌",value="플러그인이 없습니다")
-    await message.channel.send(embed=embed,view=view)
+    await message.channel.send(embed=embed)
 
 
 @client.event

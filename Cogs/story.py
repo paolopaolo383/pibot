@@ -31,9 +31,9 @@ class story(commands.Cog, name="story"):
                 await sayrandom(m,message)
             elif "배워하자" in message.content:
                 await sayrandom(["싫어", ":__~26:", ":__~28:", "응 안해"],message)
-            elif "스워하자" in message.content:
+            elif "스워하자" in message.content or "스워 하자" in message.content:
                 await sayrandom(["솔로니까 솔로로해", "싫", "ㄴ", "찮귀"],message)
-            elif "유챔하자" in message.content:
+            elif  "유챔하자" in message.content or "유챔 하자" in message.content:
                 await sayrandom(["나아아중에 ㄱ", str(random.randrange(2, 40)) + "년 뒤에 하자^^", "ㄴ"],message)
         if message.content == "ㅇㅎ":
             await sayrandom(["알기는 뭘알어", "ㅋ 지금까진 몰랐냐?", "~~야함~~"],message)

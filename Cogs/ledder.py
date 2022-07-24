@@ -84,8 +84,8 @@ class ledder(commands.Cog, name="ledder"):
         # print
 
         content = numpy.array([col, col, col])
-        leddermsg = await sendarray(message, content, num, "사다리타기\n")
-        await message.channel.send("1~" + str(count) + "중 하나를 입력해주세요", reference=message)
+        m1 = await sendarray(message, content, num, "사다리타기\n")
+        m2 = await message.channel.send("1~" + str(count) + "중 하나를 입력해주세요", reference=message)
         try:
             re = await self.client.wait_for(event='message', timeout=20.0, check=check)
         except asyncio.TimeoutError:
@@ -187,7 +187,14 @@ class ledder(commands.Cog, name="ledder"):
                                 content[i, j] = fragments[7]
 
         await sendarray(message=message, content=content, num=num, msg="사다리타기 결과\n")
-
+        try:
+            await m1.delete()
+        except:
+            pass
+        try:
+            await m2.delete()
+        except:
+            pass
 
 def xmove(array, i, j, num):
     if num < 0:
@@ -218,8 +225,8 @@ async def sendarray(message, content, num, msg):
     for ele in range(len(num)):
         if not ele == 0 and not ele == (len(num) - 1):
             msg = msg + num[ele]
-    await message.channel.send(msg, reference=message)
-    return msg
+    m1 = await message.channel.send(msg, reference=message)
+    return m1
 
 
 def setup(client):
