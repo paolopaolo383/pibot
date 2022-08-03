@@ -1,6 +1,6 @@
 import asyncio
 import random
-
+from PIL import Image
 import numpy
 from discord.ext import commands
 
@@ -213,6 +213,10 @@ def ymove(array, i, j, num):
 
 
 async def sendarray(message, content, num, msg):
+
+
+
+    #region pre
     for ele in range(len(num)):
         if not ele == 0 and not ele == (len(num) - 1):
             msg = msg + num[ele]
@@ -227,7 +231,7 @@ async def sendarray(message, content, num, msg):
             msg = msg + num[ele]
     m1 = await message.channel.send(msg, reference=message)
     return m1
-
+    #endregion
 
 def setup(client):
     client.add_cog(ledder(client))
