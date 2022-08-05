@@ -1,7 +1,8 @@
 import asyncio
 import random
-
+import gc
 import discord
+import copy
 from PIL import Image
 import imageio
 import os
@@ -20,11 +21,8 @@ reaction_list = ['\U00000030\U0000FE0F\U000020E3', '1️⃣', '2️⃣', '3️�
                  '\U00000035\U0000FE0F\U000020E3', '\U00000036\U0000FE0F\U000020E3', '\U00000037\U0000FE0F\U000020E3',
                  '\U00000038\U0000FE0F\U000020E3', '\U00000039\U0000FE0F\U000020E3']
 number = ["０", "１", "２", "３", "４", "５", "６", "７", "８", "９"]
-fragments = [-1, -2, -3,-4, -5, -6,-7, 1, 2,3, 4, 5,6, 7, 8,9, 0]
-fdc = [12,18,13,25,19,19,14,31,25,13,19,19]
-
-
-
+fragments = [-1, -2, -3, -4, -5, -6, -7, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+fdc = [12, 18, 13, 25, 19, 19, 14, 31, 25, 13, 19, 19]
 
 
 class ledder(commands.Cog, name="ledder"):
@@ -84,7 +82,7 @@ class ledder(commands.Cog, name="ledder"):
         # print
 
         content = numpy.array([col, col, col])
-        #m1 = await sendarray(message, content, num, "사다리타기\n")
+        # m1 = await sendarray(message, content, num, "사다리타기\n")
         m2 = await message.channel.send("1~" + str(count) + "중 하나를 입력해주세요", reference=message)
         try:
             re = await self.client.wait_for(event='message', timeout=20.0, check=check)
@@ -107,7 +105,7 @@ class ledder(commands.Cog, name="ledder"):
         ab = True
         ii = []
         jj = []
-        n=0
+        n = 0
         while True:
             if i == le - 1:
                 ii.append(i)
@@ -120,7 +118,7 @@ class ledder(commands.Cog, name="ledder"):
                 jj.append(j)
                 n += 1
                 ii.append(i)
-                jj.append(j+1)
+                jj.append(j + 1)
                 n += 1
                 ii.append(i)
                 jj.append(j + 2)
@@ -128,10 +126,7 @@ class ledder(commands.Cog, name="ledder"):
                 ii.append(i)
                 jj.append(j + 3)
                 n += 1
-                ii.append(i +1)
-                jj.append(j + 3)
-                n+=1
-                content[i,j+1]=10
+                content[i, j + 1] = 10
                 content[i, j + 2] = 11
                 j = j + 3
                 ledderarray = ymove(ledderarray, i, j, 1)
@@ -146,10 +141,6 @@ class ledder(commands.Cog, name="ledder"):
                 ii.append(i)
                 jj.append(j - 2)
                 n += 1
-                ii.append(i)
-                jj.append(j - 3)
-                n += 1
-
 
                 content[i, j - 1] = 11
                 content[i, j - 2] = 10
@@ -160,12 +151,8 @@ class ledder(commands.Cog, name="ledder"):
                 ledderarray = ymove(ledderarray, i, j, 1)
                 ii.append(i)
                 jj.append(j)
-                n+=1
-                ii.append(i+1)
-                jj.append(j)
                 n += 1
                 i = i + 1
-
 
         for i in range(0, le):
             for j in range(0, count * 3):
@@ -195,10 +182,10 @@ class ledder(commands.Cog, name="ledder"):
 
                         elif ledderarray[0, j] == 0:  # 사다리 사이 첫번째
                             continue
-                            #content[i, j] = fragments[10]
+                            # content[i, j] = fragments[10]
                         elif ledderarray[0, j] == -1:  # 사다리 사이 두번째
                             continue
-                            #content[i, j] = fragments[11]
+                            # content[i, j] = fragments[11]
                         else:  # 길일때
                             if ledderarray[i, j + 1] > 0 and ledderarray[i, j - 1] > 0:  # 위 양옆
                                 if ledderarray[i, j - 1] == 2 and ledderarray[i, j + 1] == 2:
@@ -222,7 +209,8 @@ class ledder(commands.Cog, name="ledder"):
                             elif not ledderarray[i, j + 1] > 0 and ledderarray[i, j - 1] > 0:  # 왼쪽
                                 if ledderarray[i + 1, j] == 2:
                                     if ledderarray[i - 1, j] == 2:
-                                        if content[i - 1, j] == fragments[9] or content[i - 1, j] == fragments[13]:  # c7도
+                                        if content[i - 1, j] == fragments[9] or content[i - 1, j] == fragments[
+                                            13]:  # c7도
                                             content[i, j] = fragments[15]
                                         else:
                                             content[i, j] = fragments[9]
@@ -234,43 +222,38 @@ class ledder(commands.Cog, name="ledder"):
                                 content[i, j] = fragments[7]
 
         images = []
-        immmm = 0
-        tile  = numpy.full((le, count * 3), 0)
-        #await sendarray(message=message, content=content, num=num, msg="사다리타기 결과\n")
-        for k in range(0,len(ii)):
-            for n in range(0,fdc[content[ii[k],jj[k]]]):
-                new = Image.new("RGBA",((count*3*108),(le*108)),30000).convert('RGBA')
+        a = 0
+        # await sendarray(message=message, content=content, num=num, msg="사다리타기 결과\n")
+        # region init
+        new = Image.new("RGBA", ((count * 3 * 108), (le * 108)), 2000).convert('RGBA')
+        for i in range(0, len(content)):
+            for j in range(0, len(content[i])):
+                if content[i][j] < 0:
+                    img = Image.open(f"C:/paolo/pibot/image/image/black/" + str(content[i, j]) + ".png").convert('RGBA')
+                else:
+                    img = Image.open(f"C:/paolo/pibot/image/image/" + str(content[i, j]) + "/0.png").convert('RGBA')
+                new.alpha_composite(img, ((j * 108), (i * 108)))
+        # endregion
+        new.save(f"C:/paolo/pibot/image/gif/" + str(a) + ".png")
+        a += 1
+        images.append(new)
+        for k in range(0, len(ii)):
+            print(str(ii[k]), str(jj[k]))
+            for n in range(0, fdc[content[ii[k], jj[k]]]):
 
+                nn = images[a-1].copy()
+                img = Image.open(
+                    f"C:/paolo/pibot/image/image/" + str(content[ii[k], jj[k]]) + "/" + str(n) + ".png").convert('RGBA')
+                nn.alpha_composite(img, ((jj[k] * 108), (ii[k] * 108)))
+                nn.save(f"C:/paolo/pibot/image/gif/" + str(a) + ".png")
+                a += 1
+                images.append(nn)
 
-                for i in range(0,len(content)):
-                    for j in range(0,len(content[i])):
-                        if content[i][j]<0:
-                            img = Image.open(f"C:/paolo/pibot/image/image/black/"+str(content[i,j])+".png").convert('RGBA')
-                        else:
-                            if tile[i,j]==1:
-                                img = Image.open(f"C:/paolo/pibot/image/image/"+str(content[i,j])+"/" + str(fdc[content[i,j]]-1) + ".png").convert('RGBA')
-                            else:
-                                if i ==ii[k] and j == jj[k]:
-                                    img = Image.open(f"C:/paolo/pibot/image/image/"+str(content[i,j])+"/" + str(n) + ".png").convert('RGBA')
-                                else:
-                                    img = Image.open(f"C:/paolo/pibot/image/image/" + str(content[i, j]) + "/0.png").convert('RGBA')
-                        new.alpha_composite(img,((j*108),(i*108)))
-                #new.save("C:/paolo/pibot/image/imm/"+str(immmm)+".png")
-                #filenames.append("C:/paolo/pibot/image/imm/"+str(immmm)+".png")
-                images.append(new)
-                immmm+=1
-
-
-            tile[ii[k],jj[k]] = 1
-
-
-        #for filename in filenames:
-        #    images.append(imageio.imread_v2(filename))
-
-        imageio.mimsave("C:/paolo/pibot/image/cv2shape.gif", images, 'GIF', duration= 0.05)
-        print("zzz")
+        imageio.mimsave("C:/paolo/pibot/image/cv2shape.gif", images, 'GIF', duration=0.05)
+        print(str(len(images)))
         file = discord.File("C:/paolo/pibot/image/cv2shape.gif")
         await message.channel.send("결과", file=file)
+
 
 def xmove(array, i, j, num):
     if num < 0:
@@ -289,10 +272,7 @@ def ymove(array, i, j, num):
 
 
 async def sendarray(message, content, num, msg):
-
-
-
-    #region pre
+    # region pre
     for ele in range(len(num)):
         if not ele == 0 and not ele == (len(num) - 1):
             msg = msg + num[ele]
@@ -307,7 +287,8 @@ async def sendarray(message, content, num, msg):
             msg = msg + num[ele]
     m1 = await message.channel.send(msg, reference=message)
     return m1
-    #endregion
+    # endregion
+
 
 def setup(client):
     client.add_cog(ledder(client))

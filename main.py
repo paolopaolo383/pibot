@@ -130,4 +130,4 @@ async def on_message(message):
         await sendembed(message)
     
 
-client.run("")
+client.run("ODgxNDk4MTc3NzAwNzczODg5.GbAKu6.EBMdotbb199-4-uzPPDG052Bu70aDPM9MjpXOM")
