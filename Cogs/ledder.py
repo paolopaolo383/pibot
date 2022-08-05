@@ -1,8 +1,13 @@
 import asyncio
 import random
+
+import discord
 from PIL import Image
+import imageio
+import os
 import numpy
 from discord.ext import commands
+import natsort
 
 le = 6
 eleme = 4
@@ -15,13 +20,8 @@ reaction_list = ['\U00000030\U0000FE0F\U000020E3', '1️⃣', '2️⃣', '3️�
                  '\U00000035\U0000FE0F\U000020E3', '\U00000036\U0000FE0F\U000020E3', '\U00000037\U0000FE0F\U000020E3',
                  '\U00000038\U0000FE0F\U000020E3', '\U00000039\U0000FE0F\U000020E3']
 number = ["０", "１", "２", "３", "４", "５", "６", "７", "８", "９"]
-fragments = ["<:0_:990543928208015381>", "<:1_:990543929973805076>", "<:3_:990543933224402964>",
-             "<:4_:990543934843387955>", "<:5_:990543937028628510>", "<:6_:990543938710569020>",
-             "<:7_:990543940291817502>", "<:c1:990619679523471462>", "<:c2:990619681436074044>",
-             "<:c3:990619683252219914>", "<:c4:990619684736999446>", "<:c5:990619686142107709>",
-             "<:c6:990619688054714462>", "<:c7:990619689925378068>", "<:c8:990619691624067104>",
-             "<:c9:990619693192740864>", "<:c0:993799593890431047>"]
-
+fragments = [-1, -2, -3,-4, -5, -6,-7, 1, 2,3, 4, 5,6, 7, 8,9, 0]
+fdc = [12,18,13,25,19,19,14,31,25,13,19,19]
 
 
 
@@ -84,7 +84,7 @@ class ledder(commands.Cog, name="ledder"):
         # print
 
         content = numpy.array([col, col, col])
-        m1 = await sendarray(message, content, num, "사다리타기\n")
+        #m1 = await sendarray(message, content, num, "사다리타기\n")
         m2 = await message.channel.send("1~" + str(count) + "중 하나를 입력해주세요", reference=message)
         try:
             re = await self.client.wait_for(event='message', timeout=20.0, check=check)
@@ -99,29 +99,74 @@ class ledder(commands.Cog, name="ledder"):
                 if ran == 1:  # 4분의 1
                     ledderarray[i, hj * 3 + 2] = 1
                     ledderarray[i, hj * 3 + 3] = 1
-
+        content = numpy.full((le, count * 3), fragments[0])
         # 맵 생성
         cnt = (int(re.content) * 3) - 2
         i = 0
         j = cnt
         ab = True
+        ii = []
+        jj = []
+        n=0
         while True:
             if i == le - 1:
+                ii.append(i)
+                jj.append(j)
+                n += 1
                 break
             if ledderarray[i, (j + 1)] == 1:  # ↘
                 ledderarray = xmove(ledderarray, i, j, 3)
+                ii.append(i)
+                jj.append(j)
+                n += 1
+                ii.append(i)
+                jj.append(j+1)
+                n += 1
+                ii.append(i)
+                jj.append(j + 2)
+                n += 1
+                ii.append(i)
+                jj.append(j + 3)
+                n += 1
+                ii.append(i +1)
+                jj.append(j + 3)
+                n+=1
+                content[i,j+1]=10
+                content[i, j + 2] = 11
                 j = j + 3
                 ledderarray = ymove(ledderarray, i, j, 1)
                 i = i + 1
             elif ledderarray[i, (j - 1)] == 1:
+                ii.append(i)
+                jj.append(j)
+                n += 1
+                ii.append(i)
+                jj.append(j - 1)
+                n += 1
+                ii.append(i)
+                jj.append(j - 2)
+                n += 1
+                ii.append(i)
+                jj.append(j - 3)
+                n += 1
+
+
+                content[i, j - 1] = 11
+                content[i, j - 2] = 10
                 ledderarray = xmove(ledderarray, i, j, -3)
                 j = j - 3
 
             elif ledderarray[i + 1, j] == 1:
                 ledderarray = ymove(ledderarray, i, j, 1)
+                ii.append(i)
+                jj.append(j)
+                n+=1
+                ii.append(i+1)
+                jj.append(j)
+                n += 1
                 i = i + 1
 
-        content = numpy.full((le, count * 3), fragments[0])
+
         for i in range(0, le):
             for j in range(0, count * 3):
                 if ledderarray[i, j] > 0:
@@ -149,9 +194,11 @@ class ledder(commands.Cog, name="ledder"):
                             content[i, j] = fragments[7]
 
                         elif ledderarray[0, j] == 0:  # 사다리 사이 첫번째
-                            content[i, j] = fragments[10]
+                            continue
+                            #content[i, j] = fragments[10]
                         elif ledderarray[0, j] == -1:  # 사다리 사이 두번째
-                            content[i, j] = fragments[11]
+                            continue
+                            #content[i, j] = fragments[11]
                         else:  # 길일때
                             if ledderarray[i, j + 1] > 0 and ledderarray[i, j - 1] > 0:  # 위 양옆
                                 if ledderarray[i, j - 1] == 2 and ledderarray[i, j + 1] == 2:
@@ -186,15 +233,44 @@ class ledder(commands.Cog, name="ledder"):
                             else:  # 아래로만
                                 content[i, j] = fragments[7]
 
-        await sendarray(message=message, content=content, num=num, msg="사다리타기 결과\n")
-        try:
-            await m1.delete()
-        except:
-            pass
-        try:
-            await m2.delete()
-        except:
-            pass
+        images = []
+        immmm = 0
+        tile  = numpy.full((le, count * 3), 0)
+        #await sendarray(message=message, content=content, num=num, msg="사다리타기 결과\n")
+        for k in range(0,len(ii)):
+            for n in range(0,fdc[content[ii[k],jj[k]]]):
+                new = Image.new("RGBA",((count*3*108),(le*108)),30000).convert('RGBA')
+
+
+                for i in range(0,len(content)):
+                    for j in range(0,len(content[i])):
+                        if content[i][j]<0:
+                            img = Image.open(f"C:/paolo/pibot/image/image/black/"+str(content[i,j])+".png").convert('RGBA')
+                        else:
+                            if tile[i,j]==1:
+                                img = Image.open(f"C:/paolo/pibot/image/image/"+str(content[i,j])+"/" + str(fdc[content[i,j]]-1) + ".png").convert('RGBA')
+                            else:
+                                if i ==ii[k] and j == jj[k]:
+                                    img = Image.open(f"C:/paolo/pibot/image/image/"+str(content[i,j])+"/" + str(n) + ".png").convert('RGBA')
+                                else:
+                                    img = Image.open(f"C:/paolo/pibot/image/image/" + str(content[i, j]) + "/0.png").convert('RGBA')
+                        new.alpha_composite(img,((j*108),(i*108)))
+                #new.save("C:/paolo/pibot/image/imm/"+str(immmm)+".png")
+                #filenames.append("C:/paolo/pibot/image/imm/"+str(immmm)+".png")
+                images.append(new)
+                immmm+=1
+
+
+            tile[ii[k],jj[k]] = 1
+
+
+        #for filename in filenames:
+        #    images.append(imageio.imread_v2(filename))
+
+        imageio.mimsave("C:/paolo/pibot/image/cv2shape.gif", images, 'GIF', duration= 0.05)
+        print("zzz")
+        file = discord.File("C:/paolo/pibot/image/cv2shape.gif")
+        await message.channel.send("결과", file=file)
 
 def xmove(array, i, j, num):
     if num < 0:
