@@ -1,17 +1,13 @@
 import asyncio
 import random
-import gc
 import discord
-import copy
 from PIL import Image
-import imageio
 import os
 import numpy
 from discord.ext import commands
-import natsort
 
 le = 6
-eleme = 4
+eleme = 9
 # maximum option
 # len 5 ele 5
 # len 6 ele 4
@@ -23,8 +19,8 @@ reaction_list = ['\U00000030\U0000FE0F\U000020E3', '1️⃣', '2️⃣', '3️�
 number = ["０", "１", "２", "３", "４", "５", "６", "７", "８", "９"]
 fragments = [-1, -2, -3, -4, -5, -6, -7, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
 fdc = [12, 18, 13, 25, 19, 19, 14, 31, 25, 13, 19, 19]
-
-
+pc = 1  #0은 가정용, 1은 노트북
+path = ["C:/paolo/pibot/", "C:/yejun/python/discord/pi/"]
 class ledder(commands.Cog, name="ledder"):
 
     def __init__(self, client):
@@ -34,16 +30,9 @@ class ledder(commands.Cog, name="ledder"):
     async def on_message(self, message):
         count = 0
 
-        def check(msg):
-            count = int(message.content.split(" ")[1])
-            try:
-                if message.author.id == msg.author.id and int(msg.content) > 0 and int(
-                        msg.content) < count + 1 and message.channel.id == msg.channel.id:
-                    return True
-                else:
-                    return False
-            except ValueError:
-                return False
+        def check(reaction,user):
+
+            return user == message.author and  str(reaction.emoji) in reaction_list[1:count+1]
 
         x = 0
         y = 0
@@ -82,10 +71,16 @@ class ledder(commands.Cog, name="ledder"):
         # print
 
         content = numpy.array([col, col, col])
-        # m1 = await sendarray(message, content, num, "사다리타기\n")
-        m2 = await message.channel.send("1~" + str(count) + "중 하나를 입력해주세요", reference=message)
+        await sendarray(message, content, num, "사다리타기\n",count)
+
+
+
+
+        m2 = await message.channel.send("1~" + str(count) + "중 하나를 눌러주세요", reference=message)
+        for i in reaction_list[1:count+1]:
+            await m2.add_reaction(i)
         try:
-            re = await self.client.wait_for(event='message', timeout=20.0, check=check)
+            re = await self.client.wait_for(event='reaction_add', timeout=20.0, check=check)
         except asyncio.TimeoutError:
             await message.channel.send("시간이 지났습니다", reference=message)
             return
@@ -99,7 +94,7 @@ class ledder(commands.Cog, name="ledder"):
                     ledderarray[i, hj * 3 + 3] = 1
         content = numpy.full((le, count * 3), fragments[0])
         # 맵 생성
-        cnt = (int(re.content) * 3) - 2
+        cnt = (int(reaction_list.index(str(re[0].emoji))) * 3) - 2
         i = 0
         j = cnt
         ab = True
@@ -126,8 +121,8 @@ class ledder(commands.Cog, name="ledder"):
                 ii.append(i)
                 jj.append(j + 3)
                 n += 1
-                content[i, j + 1] = 10
-                content[i, j + 2] = 11
+                content[i, j + 1] = 4
+                content[i, j + 2] = 5
                 j = j + 3
                 ledderarray = ymove(ledderarray, i, j, 1)
                 i = i + 1
@@ -209,8 +204,7 @@ class ledder(commands.Cog, name="ledder"):
                             elif not ledderarray[i, j + 1] > 0 and ledderarray[i, j - 1] > 0:  # 왼쪽
                                 if ledderarray[i + 1, j] == 2:
                                     if ledderarray[i - 1, j] == 2:
-                                        if content[i - 1, j] == fragments[9] or content[i - 1, j] == fragments[
-                                            13]:  # c7도
+                                        if content[i - 1, j] == fragments[9] or content[i - 1, j] == fragments[13]:  # c7도
                                             content[i, j] = fragments[15]
                                         else:
                                             content[i, j] = fragments[9]
@@ -229,30 +223,34 @@ class ledder(commands.Cog, name="ledder"):
         for i in range(0, len(content)):
             for j in range(0, len(content[i])):
                 if content[i][j] < 0:
-                    img = Image.open(f"C:/paolo/pibot/image/image/black/" + str(content[i, j]) + ".png").convert('RGBA')
+                    img = Image.open(path[pc]+"image/image/black/" + str(content[i, j]) + ".png").convert('RGBA')
                 else:
-                    img = Image.open(f"C:/paolo/pibot/image/image/" + str(content[i, j]) + "/0.png").convert('RGBA')
+                    img = Image.open(path[pc]+"image/image/" + str(content[i, j]) + "/0.png").convert('RGBA')
                 new.alpha_composite(img, ((j * 108), (i * 108)))
         # endregion
-        new.save(f"C:/paolo/pibot/image/gif/" + str(a) + ".png")
         a += 1
         images.append(new)
         for k in range(0, len(ii)):
-            print(str(ii[k]), str(jj[k]))
             for n in range(0, fdc[content[ii[k], jj[k]]]):
 
                 nn = images[a-1].copy()
-                img = Image.open(
-                    f"C:/paolo/pibot/image/image/" + str(content[ii[k], jj[k]]) + "/" + str(n) + ".png").convert('RGBA')
+                img = Image.open(path[pc]+"image/image/" + str(content[ii[k], jj[k]]) + "/" + str(n) + ".png").convert('RGBA')
                 nn.alpha_composite(img, ((jj[k] * 108), (ii[k] * 108)))
-                nn.save(f"C:/paolo/pibot/image/gif/" + str(a) + ".png")
                 a += 1
                 images.append(nn)
 
-        imageio.mimsave("C:/paolo/pibot/image/cv2shape.gif", images, 'GIF', duration=0.05)
-        print(str(len(images)))
-        file = discord.File("C:/paolo/pibot/image/cv2shape.gif")
+
+        for i in range(1,200):
+            nn = images[a - 1].copy()
+            images.append(nn)
+        images[0].save(path[pc]+"image/cv2shape.gif", format='GIF',
+                       append_images=images[1:],
+                       save_all=True,
+                       duration=32, loop=0)
+        file = discord.File(path[pc]+"image/cv2shape.gif")
         await message.channel.send("결과", file=file)
+
+
 
 
 def xmove(array, i, j, num):
@@ -271,21 +269,16 @@ def ymove(array, i, j, num):
     return array
 
 
-async def sendarray(message, content, num, msg):
+async def sendarray(message, content, num, msg,count):
     # region pre
-    for ele in range(len(num)):
-        if not ele == 0 and not ele == (len(num) - 1):
-            msg = msg + num[ele]
-    for i in range(len(content)):
-        msg = msg + "\n"
-        for j in range(len(content[i])):
-            if not j == 0 and not j == (len(content[i]) - 1):
-                msg = msg + content[i, j]
-    msg = msg + "\n"
-    for ele in range(len(num)):
-        if not ele == 0 and not ele == (len(num) - 1):
-            msg = msg + num[ele]
-    m1 = await message.channel.send(msg, reference=message)
+    new = Image.new("RGBA", ((count*3 *108), (3 * 108)), 2000).convert('RGBA')
+    for i in range(0, len(content)):
+        for j in range(0, len(content[i])):
+            img = Image.open(path[pc] + "image/image/black/" + str(content[i, j]) + ".png").convert('RGBA')
+            new.alpha_composite(img, ((j * 108), (i * 108)))
+    new.save(path[pc]+"image/thumnail.png")
+    file = discord.File(path[pc] + "image/thumnail.png")
+    m1 = await message.channel.send(msg, file = file)
     return m1
     # endregion
 

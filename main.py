@@ -8,6 +8,8 @@ import json
 import numpy
 from discord.ext import commands
 
+import token2
+
 files = os.listdir("Cogs")
 
 client = commands.Bot(command_prefix=None, help_command=None)
@@ -130,4 +132,4 @@ async def on_message(message):
         await sendembed(message)
     
 
-client.run("ODgxNDk4MTc3NzAwNzczODg5.GbAKu6.EBMdotbb199-4-uzPPDG052Bu70aDPM9MjpXOM")
+client.run(token2.gettoken())
