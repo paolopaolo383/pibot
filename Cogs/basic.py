@@ -1,7 +1,6 @@
-from unicodedata import name
+
 import discord
 from discord.ext import commands
-import json
 
 class basic(commands.Cog):
 

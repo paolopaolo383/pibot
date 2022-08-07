@@ -19,8 +19,8 @@ reaction_list = ['\U00000030\U0000FE0F\U000020E3', '1️⃣', '2️⃣', '3️�
 number = ["０", "１", "２", "３", "４", "５", "６", "７", "８", "９"]
 fragments = [-1, -2, -3, -4, -5, -6, -7, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
 fdc = [12, 18, 13, 25, 19, 19, 14, 31, 25, 13, 19, 19]
-pc = 1  #0은 가정용, 1은 노트북
-path = ["C:/paolo/pibot/", "C:/yejun/python/discord/pi/"]
+pc = 2  #0은 가정용, 1은 노트북, 2는 heroku
+path = ["C:/paolo/pibot/", "C:/yejun/python/discord/pi/", ""]
 class ledder(commands.Cog, name="ledder"):
 
     def __init__(self, client):
