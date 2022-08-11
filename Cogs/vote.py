@@ -1,13 +1,15 @@
+
 import discord
 from discord import Integration, SelectOption
-
+from discord_slash import SlashCommand, SlashContext
+from discord_slash.utils.manage_commands import create_choice, create_option
 from discord.ui import Button, View, Select
 from discord.ext import commands
 
 idlist = [596708010768990209, 587545300126924810, 709533146034602084, 783579362062630933, 825639467494539279,
           829166944946094120]
 #               예준                 널                  러마               란토                 덴                 pb봇
-
+client = None
 class vote(commands.Cog, name="vote"):
     voting = False
     voter = []
@@ -17,6 +19,10 @@ class vote(commands.Cog, name="vote"):
     options = []
     def __init__(self, client: commands.Bot) -> None:
         self.client = client
+
+
+
+    @client.slash_command(name = "vote",description = "vote something",options = [create_option(name="option's number", required=True,option_type=5)])
     @commands.Cog.listener()
     async def on_message(self, message):
         global voting
@@ -29,7 +35,7 @@ class vote(commands.Cog, name="vote"):
             if not interaction.user.id in voter:
                 voter.append(interaction.user.id)
                 await interaction.response.send_message(f"{len(voter)}명 투표")
-                re[int(selectmenu.values[0].split("번")[0])-1] +=1
+                re[options.index(selectmenu.values[0])] +=1
 
             else:
                 await interaction.response.defer()
@@ -82,6 +88,5 @@ class vote(commands.Cog, name="vote"):
 
 
 async def setup(client: commands.Bot) -> None:
-    await client.add_cog(
-        vote(client),
-    )
+    await client.add_cog(vote(client),)
+    client = client
