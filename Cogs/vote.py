@@ -1,8 +1,6 @@
 
 import discord
 from discord import Integration, SelectOption
-from discord_slash import SlashCommand, SlashContext
-from discord_slash.utils.manage_commands import create_choice, create_option
 from discord.ui import Button, View, Select
 from discord.ext import commands
 
@@ -22,7 +20,6 @@ class vote(commands.Cog, name="vote"):
 
 
 
-    @client.slash_command(name = "vote",description = "vote something",options = [create_option(name="option's number", required=True,option_type=5)])
     @commands.Cog.listener()
     async def on_message(self, message):
         global voting
@@ -39,6 +36,11 @@ class vote(commands.Cog, name="vote"):
 
             else:
                 await interaction.response.defer()
+                if interaction.user.dm_channel:
+                    await interaction.user.dm_channel.send("중복투표는 불가능하며 수정또한 불가능합니다.")
+                elif interaction.user.dm_channel is None:
+                    channel = await interaction.user.create_dm()
+                    await channel.send("중복투표는 불가능하며 수정또한 불가능합니다.")
 
         if message.content =="vote end":
             if voting and usid == message.author.id:
