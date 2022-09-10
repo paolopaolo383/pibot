@@ -1,9 +1,7 @@
 import asyncio
 import random
 import discord
-from discord.ui import Button, View
 from PIL import Image
-import os
 import numpy
 from discord.ext import commands
 
@@ -74,11 +72,7 @@ class ledder(commands.Cog, name="ledder"):
         await sendarray(message, content, num, "사다리타기\n",count)
 
 
-
-        button = Button(label = "사다리타기", style= discord.ButtonStyle.red)
-        view = View()
-        view.add_item(button)
-        m2 = await message.channel.send("1~" + str(count) + "중 하나를 눌러주세요", reference=message, view = view)
+        m2 = await message.channel.send("1~" + str(count) + "중 하나를 눌러주세요", reference=message)
         for i in reaction_list[1:count+1]:
             await m2.add_reaction(i)
         try:

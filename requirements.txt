@@ -1,5 +1,6 @@
-discord.py
+discord.py~=2.0.1
 numpy~=1.19.2
-discord~=1.0.1
+discord~=2.0.0
 asyncio
 pillow
+Pillow~=9.2.0

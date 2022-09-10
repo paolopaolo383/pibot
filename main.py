@@ -1,15 +1,8 @@
 import os
-import async_timeout
-import asyncio
 from discord import Intents, app_commands
 import discord
-import random
-import json
-import numpy
 from discord.ext import commands
 
-import main
-import token2
 
 files = os.listdir("Cogs")
 
@@ -149,4 +142,4 @@ class pi(commands.Bot):
 
 
 client = pi()
-client.run(token2.gettoken())
+client.run(os.environ['token'])
