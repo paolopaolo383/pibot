@@ -2,6 +2,7 @@ import os
 from discord import Intents, app_commands
 import discord
 from discord.ext import commands
+import token2
 
 
 files = os.listdir("Cogs")
@@ -116,6 +117,11 @@ class pi(commands.Bot):
                 if file in files:
                     await client.unload_extension(f"Cogs.{file[:-3]}")
                     files.remove(file)
+                    await client.load_extension(f"Cogs.{file[:-3]}")
+                    files.append(file)
+                    await pi.sendembed(self, message)
+                    print(f"--{file} 리로드 완료")
+                    return
                 await client.load_extension(f"Cogs.{file[:-3]}")
                 files.append(file)
                 await pi.sendembed(self, message)
@@ -140,6 +146,26 @@ class pi(commands.Bot):
         if message.content == "plugins":
             await pi.sendembed(self, message)
 
+    @commands.Cog.listener()
+    async def on_command_error(self, ctx, error):
+        if hasattr(ctx.command, 'on_error'):
+            return
+
+        cog = ctx.cog
+        if cog:
+            if cog._get_overridden_method(cog.cog_command_error) is not None:
+                return
+
+        ignored = (commands.CommandNotFound,)
+        error = getattr(error, 'original', error)
+
+        if isinstance(error, commands.CommandInvokeError):
+            ctx.send("error")
+            return
+        else:
+            ctx.send("error")
+            return
+
 
 client = pi()
-client.run(os.environ['token'])
+client.run(token2.gettoken())

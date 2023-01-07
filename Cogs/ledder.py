@@ -24,10 +24,13 @@ class ledder(commands.Cog, name="ledder"):
     def __init__(self, client: commands.Bot) -> None:
         self.client = client
 
+
     @commands.Cog.listener()
     async def on_message(self, message):
         count = 0
 
+        async def callback(interaction):
+            await interaction.response.defer()
         def check(reaction,user):
 
             return user == message.author and  str(reaction.emoji) in reaction_list[1:count+1]
@@ -71,7 +74,7 @@ class ledder(commands.Cog, name="ledder"):
         content = numpy.array([col, col, col])
         await sendarray(message, content, num, "사다리타기\n",count)
 
-
+# ////////////////////////////////////////////////////////////////////////////////////////////
         m2 = await message.channel.send("1~" + str(count) + "중 하나를 눌러주세요", reference=message)
         for i in reaction_list[1:count+1]:
             await m2.add_reaction(i)
@@ -80,7 +83,7 @@ class ledder(commands.Cog, name="ledder"):
         except asyncio.TimeoutError:
             await message.channel.send("시간이 지났습니다", reference=message)
             return
-
+# ////////////////////////////////////////////////////////////////////////////////////////////
         ledderarray = numpy.array([line] * le)
         for i in range(1, le - 1):
             for hj in range(0, count - 1):
